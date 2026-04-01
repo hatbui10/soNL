@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Neon Glass Scanner v11.0 - Fixed Font</title>
+    <title>Multi-File Data Scanner Pro v13.0 - No Duplicates</title>
     <style>
         :root {
             --bg: #05070a;
@@ -40,7 +40,7 @@
 
         .upload-section {
             background: rgba(255,255,255,0.02);
-            border: 1px dashed #333; padding: 25px; text-align: center;
+            border: 1px dashed #444; padding: 25px; text-align: center;
             border-radius: 15px; margin-bottom: 25px; transition: 0.3s;
         }
         .upload-section:hover { border-color: var(--neon-blue); background: rgba(0,210,255,0.05); }
@@ -49,12 +49,14 @@
         .btn-upload {
             background: transparent; color: var(--neon-blue); border: 1px solid var(--neon-blue);
             padding: 12px 30px; cursor: pointer; border-radius: 30px; font-weight: 600;
-            text-transform: uppercase; font-size: 0.8rem; transition: 0.3s;
+            text-transform: uppercase; font-size: 0.8rem; transition: 0.3s; display: inline-block;
         }
         .btn-upload:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
 
+        #fileStatus { margin-top: 15px; font-size: 0.85rem; color: var(--neon-blue); font-style: italic; }
+
         textarea {
-            width: 100%; height: 100px; background: rgba(0,0,0,0.3); border: 1px solid #222;
+            width: 100%; height: 120px; background: rgba(0,0,0,0.3); border: 1px solid #222;
             border-radius: 12px; color: var(--neon-green); padding: 15px; font-family: monospace;
             box-sizing: border-box; resize: none; margin-bottom: 20px; outline: none;
         }
@@ -77,9 +79,7 @@
         .box { 
             background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); 
             border-radius: 18px; height: 500px; display: flex; flex-direction: column; overflow: hidden;
-            transition: 0.3s;
         }
-        .box:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-5px); }
 
         .label { 
             padding: 15px; font-size: 0.85rem; font-weight: bold; background: rgba(255,255,255,0.03);
@@ -88,9 +88,8 @@
 
         .copy-btn {
             background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff;
-            padding: 4px 10px; font-size: 0.7rem; border-radius: 5px; cursor: pointer; transition: 0.2s;
+            padding: 4px 10px; font-size: 0.7rem; border-radius: 5px; cursor: pointer;
         }
-        .copy-btn:hover { background: #fff; color: #000; }
 
         .display { flex-grow: 1; overflow-y: auto; padding: 15px; font-size: 13px; color: #aaa; line-height: 2.2; }
         .tag { display: inline-block; margin: 3px; padding: 0 8px; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 5px; color: #eee; }
@@ -102,24 +101,24 @@
 <body>
 
 <div class="container">
-    <h2>DATA SCANNER PRO</h2>
+    <h2>DATA SCANNER (NO DUPLICATES)</h2>
     
     <div class="upload-section">
-        <label for="fileInput" class="btn-upload">Nạp dữ liệu .txt</label>
-        <input type="file" id="fileInput" accept=".txt">
-        <div id="fileName" style="margin-top: 12px; font-size: 0.8rem; color: #555;">File xuất ra đã được sửa lỗi font tiếng Việt</div>
+        <label for="fileInput" class="btn-upload">CHỌN NHIỀU FILE .TXT</label>
+        <input type="file" id="fileInput" accept=".txt" multiple>
+        <div id="fileStatus">Chưa có file nào được nạp</div>
     </div>
 
-    <textarea id="input" placeholder="Dữ liệu thô..."></textarea>
+    <textarea id="input" placeholder="Dữ liệu gộp sẽ hiển thị tại đây..."></textarea>
     
     <div class="toolbar">
-        <button class="btn-main" onclick="runAnalysis()">BẮT ĐẦU PHÂN TÍCH</button>
+        <button class="btn-main" onclick="runAnalysis()">PHÂN TÍCH & LỌC TRÙNG</button>
         <button class="btn-export" onclick="exportFullFile()">XUẤT FILE TỔNG HỢP</button>
         <button style="border-color: #444; color: #888;" class="btn-main" onclick="clearData()">XÓA TẤT CẢ</button>
     </div>
 
     <div class="results">
-        <div class="box" style="box-shadow: inset 0 0 20px rgba(255, 0, 127, 0.05);">
+        <div class="box">
             <div class="label" style="color: var(--neon-pink);">
                 <span>TỆP LỚN (B > 5) <small id="countL">0</small></span>
                 <button class="copy-btn" onclick="copyResult('finalL')">COPY</button>
@@ -127,7 +126,7 @@
             <div id="resL" class="display"></div>
         </div>
 
-        <div class="box" style="box-shadow: inset 0 0 20px rgba(0, 210, 255, 0.05);">
+        <div class="box">
             <div class="label" style="color: var(--neon-blue);">
                 <span>TỆP NHỎ (B < 5) <small id="countN">0</small></span>
                 <button class="copy-btn" onclick="copyResult('finalN')">COPY</button>
@@ -147,53 +146,51 @@
 <script>
     let finalL = [], finalN = [], finalTG = [];
 
-    window.onload = () => {
-        const saved = localStorage.getItem('lastInput');
-        if (saved) { document.getElementById('input').value = saved; runAnalysis(); }
-    };
+    document.getElementById('fileInput').addEventListener('change', async function(e) {
+        const files = e.target.files;
+        if (files.length === 0) return;
 
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        document.getElementById('fileName').innerText = "File: " + file.name;
-        const reader = new FileReader();
-        reader.onload = (e) => { 
-            document.getElementById('input').value = e.target.result; 
-            runAnalysis(); 
-        };
-        reader.readAsText(file);
+        document.getElementById('fileStatus').innerText = `Đang nạp ${files.length} file...`;
+        let combinedText = "";
+        for (let file of files) {
+            const text = await file.text();
+            combinedText += text + " ";
+        }
+        document.getElementById('input').value = combinedText;
+        document.getElementById('fileStatus').innerText = `Đã nạp xong ${files.length} file.`;
+        runAnalysis();
     });
 
     function runAnalysis() {
         const raw = document.getElementById('input').value.replace(/\D/g, '');
         if (!raw || raw.length < 10) return;
-        localStorage.setItem('lastInput', document.getElementById('input').value);
 
-        finalL = []; finalN = []; finalTG = [];
+        // Sử dụng Set để tự động loại bỏ các chuỗi trùng lặp
+        let setL = new Set();
+        let setN = new Set();
+        let setTG = new Set();
 
-        // Duyệt trượt chuỗi 10 số
         for (let i = 0; i <= raw.length - 10; i++) {
             let full10 = raw.substring(i, i + 10);
             let A = full10.substring(0, 5);
             let B = full10.substring(5, 10);
             
             let digitsB = B.split('').map(n => parseInt(n));
-            
-            // Điều kiện: Tất cả 5 số sau (B) đều < 5
             let isAllSmall = digitsB.every(d => d < 5);
-            // Điều kiện: Tất cả 5 số sau (B) đều > 5
             let isAllLarge = digitsB.every(d => d > 5);
 
             let resultString = `${A}-${B}`;
 
-            if (isAllSmall) {
-                finalN.push(resultString);
-            } else if (isAllLarge) {
-                finalL.push(resultString);
-            } else {
-                finalTG.push(resultString);
-            }
+            if (isAllSmall) setN.add(resultString);
+            else if (isAllLarge) setL.add(resultString);
+            else setTG.add(resultString);
         }
+
+        // Chuyển Set ngược lại thành Array để hiển thị
+        finalL = Array.from(setL);
+        finalN = Array.from(setN);
+        finalTG = Array.from(setTG);
+
         updateUI();
     }
 
@@ -209,32 +206,28 @@
 
     function copyResult(arrayName) {
         let arr = arrayName === 'finalL' ? finalL : finalN;
-        if (arr.length === 0) return alert("Không có dữ liệu để copy!");
-        navigator.clipboard.writeText(arr.join('\n')).then(() => {
-            alert("Đã copy danh sách vào bộ nhớ tạm!");
-        });
+        if (arr.length === 0) return alert("Không có dữ liệu!");
+        navigator.clipboard.writeText(arr.join('\n')).then(() => alert("Đã copy!"));
     }
 
     function exportFullFile() {
-        if (finalL.length === 0 && finalN.length === 0) return alert("Không có dữ liệu để xuất!");
-        
+        if (finalL.length === 0 && finalN.length === 0) return alert("Không có dữ liệu!");
         const content = `TỆP NHỎ (B < 5):\n${finalN.join('\n')}\n\n\nTỆP LỚN (B > 5):\n${finalL.join('\n')}`;
-        
         const BOM = '\uFEFF';
         const blob = new Blob([BOM + content], { type: 'text/plain;charset=utf-8' });
-        
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `analysis_report_${new Date().getTime()}.txt`;
+        a.download = `Ket_qua_khong_trung_${new Date().getTime()}.txt`;
         a.click();
-        URL.revokeObjectURL(url);
     }
 
     function clearData() {
-        if(confirm("Xóa toàn bộ dữ liệu hiện tại?")) { 
-            localStorage.clear(); 
-            location.reload(); 
+        if(confirm("Xóa toàn bộ dữ liệu?")) { 
+            document.getElementById('input').value = "";
+            document.getElementById('fileStatus').innerText = "Chưa có file nào được nạp";
+            finalL = []; finalN = []; finalTG = [];
+            updateUI();
         }
     }
 </script>
