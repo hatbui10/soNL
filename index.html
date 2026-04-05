@@ -2,275 +2,237 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Multi-File Data Scanner Pro v13.0 - No Duplicates</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Sequence Analyzer - Pro</title>
     <style>
         :root {
-            --bg: #05070a;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --neon-blue: #00d2ff;
-            --neon-pink: #ff007f;
-            --neon-gold: #ffbd39;
-            --neon-green: #00ff88;
-            --text: #e0e0e0;
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --bg-color: #0a0a0a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
         }
 
         body {
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 50% 50%, #101520 0%, #05070a 100%);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; justify-content: center; padding: 30px; margin: 0;
-            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 30px 3px 0 3px; /* Rule: 30px top, 3px sides */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
-            width: 100%; max-width: 1400px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px; padding: 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 900px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
-        h2 { 
-            text-align: center; color: #fff; font-weight: 300; letter-spacing: 3px;
-            text-shadow: 0 0 15px var(--neon-blue); margin-bottom: 30px;
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .upload-section {
-            background: rgba(255,255,255,0.02);
-            border: 1px dashed #444; padding: 25px; text-align: center;
-            border-radius: 15px; margin-bottom: 25px; transition: 0.3s;
+        input[type="number"], input[type="file"] {
+            background: #1a1a1a;
+            border: 1px solid var(--neon-blue);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            outline: none;
         }
-        .upload-section:hover { border-color: var(--neon-blue); background: rgba(0,210,255,0.05); }
 
-        #fileInput { display: none; }
-        .btn-upload {
-            background: transparent; color: var(--neon-blue); border: 1px solid var(--neon-blue);
-            padding: 12px 30px; cursor: pointer; border-radius: 30px; font-weight: 600;
-            text-transform: uppercase; font-size: 0.8rem; transition: 0.3s; display: inline-block;
+        .btn-group {
+            display: flex;
+            gap: 5px;
         }
-        .btn-upload:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
 
-        #fileStatus { margin-top: 15px; font-size: 0.85rem; color: var(--neon-blue); font-style: italic; }
+        button {
+            background: transparent;
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: var(--neon-pink);
+            color: white;
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .display-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .column {
+            display: flex; flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: var(--neon-blue);
+            font-size: 0.85em;
+            font-weight: bold;
+        }
 
         textarea {
-            width: 100%; height: 120px; background: rgba(0,0,0,0.3); border: 1px solid #222;
-            border-radius: 12px; color: var(--neon-green); padding: 15px; font-family: monospace;
-            box-sizing: border-box; resize: none; margin-bottom: 20px; outline: none;
+            width: 100%;
+            height: 450px;
+            background: #000;
+            color: #00ff41;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
         }
 
-        .toolbar { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
-
-        .btn-main {
-            background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green);
-            padding: 12px 35px; cursor: pointer; border-radius: 30px; font-weight: bold; transition: 0.3s;
+        #inputNum {
+            width: 120px;
+            font-size: 1.2em;
+            text-align: center;
         }
-        .btn-main:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 25px var(--neon-green); }
-
-        .btn-export {
-            background: transparent; border: 1px solid var(--neon-gold); color: var(--neon-gold);
-            padding: 12px 35px; cursor: pointer; border-radius: 30px; font-weight: bold; transition: 0.3s;
-        }
-        .btn-export:hover { background: var(--neon-gold); color: #000; box-shadow: 0 0 25px var(--neon-gold); }
-
-        .results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        .box { 
-            background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); 
-            border-radius: 18px; height: 500px; display: flex; flex-direction: column; overflow: hidden;
-        }
-
-        .label { 
-            padding: 15px; font-size: 0.85rem; font-weight: bold; background: rgba(255,255,255,0.03);
-            border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .copy-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff;
-            padding: 4px 10px; font-size: 0.7rem; border-radius: 5px; cursor: pointer;
-        }
-
-        .display { flex-grow: 1; overflow-y: auto; padding: 15px; font-size: 13px; color: #aaa; line-height: 2.2; }
-        .tag { display: inline-block; margin: 3px; padding: 0 8px; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 5px; color: #eee; }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>DATA SCANNER (NO DUPLICATES)</h2>
-    
-    <div class="upload-section">
-        <label for="fileInput" class="btn-upload">CHỌN NHIỀU FILE .TXT</label>
-        <input type="file" id="fileInput" accept=".txt" multiple>
-        <div id="fileStatus">Chưa có file nào được nạp</div>
+    <div class="controls">
+        <input type="file" id="fileInput" multiple accept=".txt">
+        <input type="number" id="inputNum" placeholder="Nhập số..." inputmode="numeric">
+        
+        <div class="btn-group">
+            <button onclick="analyze(1)">Loại 1</button>
+            <button onclick="analyze(2)">Loại 2</button>
+            <button onclick="analyze(3)">Loại 3</button>
+            <button onclick="analyze(4)">Loại 4</button>
+        </div>
+        
+        <button onclick="clearData()" style="border-color: #ff4444; color: #ff4444;">Xóa</button>
     </div>
 
-    <textarea id="input" placeholder="Dữ liệu gộp sẽ hiển thị tại đây..."></textarea>
-    
-    <div class="toolbar">
-        <button class="btn-main" onclick="runAnalysis()">PHÂN TÍCH & LỌC TRÙNG</button>
-        <button class="btn-export" onclick="exportFullFile()">XUẤT FILE TỔNG HỢP</button>
-        <button style="border-color: #444; color: #888;" class="btn-main" onclick="clearData()">XÓA TẤT CẢ</button>
-    </div>
-
-    <div class="results">
-        <div class="box">
-            <div class="label" style="color: var(--neon-pink);">
-                <span>TỆP LỚN (B > 5) <small id="countL">0</small></span>
-                <button class="copy-btn" onclick="copyResult('finalL')">COPY</button>
-            </div>
-            <div id="resL" class="display"></div>
+    <div class="display-area">
+        <div class="column">
+            <label>DÃY NHỎ (< 5) - DÀI NHẤT TRÊN CÙNG</label>
+            <textarea id="outputSmall" readonly></textarea>
         </div>
-
-        <div class="box">
-            <div class="label" style="color: var(--neon-blue);">
-                <span>TỆP NHỎ (B < 5) <small id="countN">0</small></span>
-                <button class="copy-btn" onclick="copyResult('finalN')">COPY</button>
-            </div>
-            <div id="resN" class="display"></div>
-        </div>
-
-        <div class="box">
-            <div class="label" style="color: var(--neon-gold);">
-                <span>TRUNG GIAN <small id="countTG">0</small></span>
-            </div>
-            <div id="resTG" class="display"></div>
+        <div class="column">
+            <label>DÃY LỚN (≥ 5) - DÀI NHẤT TRÊN CÙNG</label>
+            <textarea id="outputLarge" readonly></textarea>
         </div>
     </div>
 </div>
 
 <script>
-    let finalL = [], finalN = [], finalTG = [];
+    const fileInput = document.getElementById('fileInput');
+    const inputNum = document.getElementById('inputNum');
+    const outputSmall = document.getElementById('outputSmall');
+    const outputLarge = document.getElementById('outputLarge');
 
-    document.getElementById('fileInput').addEventListener('change', async function(e) {
-        const files = e.target.files;
-        if (files.length === 0) return;
+    // Load data từ LocalStorage
+    let combinedData = localStorage.getItem('storedNumbers') || "";
 
-        document.getElementById('fileStatus').innerText = `Đang nạp ${files.length} file...`;
-        let combinedText = "";
+    fileInput.addEventListener('change', async (e) => {
+        let files = e.target.files;
+        let newContent = "";
         for (let file of files) {
-            const text = await file.text();
-            combinedText += text + " ";
+            let text = await file.text();
+            newContent += text;
         }
-        document.getElementById('input').value = combinedText;
-        document.getElementById('fileStatus').innerText = `Đã nạp xong ${files.length} file.`;
-        runAnalysis();
+        // Làm sạch: chỉ giữ lại số
+        combinedData += newContent.replace(/[^0-9]/g, '');
+        localStorage.setItem('storedNumbers', combinedData);
+        
+        inputNum.focus();
+        alert("Đã nạp thêm dữ liệu!");
     });
 
-        function runAnalysis() {
-        const raw = document.getElementById('input').value.replace(/\D/g, '');
-        if (!raw || raw.length < 10) return;
+    function analyze(typeCount) {
+        const target = inputNum.value.trim();
+        if (!target || combinedData === "") {
+            alert("Thiếu số nhập hoặc chưa có dữ liệu file!");
+            return;
+        }
 
-        let setL = new Set();
-        let setN = new Set();
-        let setTG = new Set();
+        // Kiểm tra độ dài số nhập vào có khớp với loại nút bấm không
+        if (target.length !== typeCount) {
+            alert(`Vui lòng nhập đúng ${typeCount} số cho loại này!`);
+            return;
+        }
 
-        for (let i = 0; i <= raw.length - 10; i++) {
-            let A = raw.substring(i, i + 5);
-            let remain = raw.substring(i + 5); // Phần còn lại từ sau 5 số đầu
-            
-            // Lấy 5 số tiếp theo để phân loại Lớn/Nhỏ như cũ
-            let B_standard = raw.substring(i + 5, i + 10);
-            let digitsB = B_standard.split('').map(n => parseInt(n));
-            let isAllSmall = digitsB.every(d => d < 5);
-            let isAllLarge = digitsB.every(d => d >= 5);
+        let smallList = [];
+        let largeList = [];
 
-            if (isAllSmall) {
-                setN.add(`${A}-${B_standard}`);
-            } else if (isAllLarge) {
-                setL.add(`${A}-${B_standard}`);
-            } else {
-                // LOGIC TRUNG GIAN MỚI: Xây dựng chuỗi abab...
-                let ababStr = "";
-                for (let j = 0; j < remain.length; j++) {
-                    let current = parseInt(remain[j]);
-                    let next = (j + 1 < remain.length) ? parseInt(remain[j+1]) : null;
-                    let afterNext = (j + 2 < remain.length) ? parseInt(remain[j+2]) : null;
+        // Duyệt chuỗi để tìm target
+        for (let i = 0; i <= combinedData.length - target.length; i++) {
+            // Cắt một đoạn bằng độ dài target để so sánh
+            if (combinedData.substring(i, i + target.length) === target) {
+                let j = i + target.length;
+                let seqSmall = "";
+                let seqLarge = "";
 
-                    // Kiểm tra điều kiện dừng: baa (L-N-N) hoặc abb (N-L-L)
-                    if (next !== null && afterNext !== null) {
-                        let cL = current >= 5;
-                        let nL = next >= 5;
-                        let aL = afterNext >= 5;
-                        
-                        if ((cL && !nL && !aL) || (!cL && nL && aL)) {
-                            ababStr += current; // Lấy nốt số hiện tại rồi dừng
-                            break;
-                        }
-                    }
-
-                    // Kiểm tra tính chất abab (số sau phải ngược tính chất số trước)
-                    if (ababStr.length > 0) {
-                        let prev = parseInt(ababStr[ababStr.length - 1]);
-                        let prevIsLarge = prev >= 5;
-                        let currIsLarge = current >= 5;
-
-                        if (prevIsLarge === currIsLarge) break; // Nếu cùng tính chất thì dừng
-                    }
-
-                    ababStr += current;
+                // Nhánh tìm số nhỏ (< 5)
+                let tempJ = j;
+                while (tempJ < combinedData.length) {
+                    let next = parseInt(combinedData[tempJ]);
+                    if (next < 5) seqSmall += next;
+                    else break;
+                    tempJ++;
                 }
 
-                if (ababStr.length >= 2) { // Chỉ lấy nếu tạo được chuỗi ab ít nhất 2 ký tự
-                    setTG.add(`${A}-${ababStr}`);
+                // Nhánh tìm số lớn (>= 5)
+                tempJ = j;
+                while (tempJ < combinedData.length) {
+                    let next = parseInt(combinedData[tempJ]);
+                    if (next >= 5) seqLarge += next;
+                    else break;
+                    tempJ++;
                 }
+
+                if (seqSmall.length > 0) smallList.push(`${target}-${seqSmall}`);
+                if (seqLarge.length > 0) largeList.push(`${target}-${seqLarge}`);
             }
         }
 
-        finalL = Array.from(setL);
-        finalN = Array.from(setN);
-        finalTG = Array.from(setTG);
+        // --- SẮP XẾP DÀI NHẤT LÊN TRÊN ---
+        smallList.sort((a, b) => b.length - a.length);
+        largeList.sort((a, b) => b.length - a.length);
 
-        updateUI();
-    }
-
-
-
-
-
-
-    
-
-    function updateUI() {
-        const draw = (id, arr, cId) => {
-            document.getElementById(id).innerHTML = arr.map(v => `<span class="tag">${v}</span>`).join('');
-            document.getElementById(cId).innerText = `(${arr.length})`;
-        };
-        draw('resL', finalL, 'countL');
-        draw('resN', finalN, 'countN');
-        draw('resTG', finalTG, 'countTG');
-    }
-
-    function copyResult(arrayName) {
-        let arr = arrayName === 'finalL' ? finalL : finalN;
-        if (arr.length === 0) return alert("Không có dữ liệu!");
-        navigator.clipboard.writeText(arr.join('\n')).then(() => alert("Đã copy!"));
-    }
-
-    function exportFullFile() {
-        if (finalL.length === 0 && finalN.length === 0) return alert("Không có dữ liệu!");
-        const content = `TỆP NHỎ (B < 5):\n${finalN.join('\n')}\n\n\nTỆP LỚN (B > 5):\n${finalL.join('\n')}`;
-        const BOM = '\uFEFF';
-        const blob = new Blob([BOM + content], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Ket_qua_khong_trung_${new Date().getTime()}.txt`;
-        a.click();
+        // Hiển thị kết quả
+        outputSmall.value = smallList.join('\n');
+        outputLarge.value = largeList.join('\n');
     }
 
     function clearData() {
-        if(confirm("Xóa toàn bộ dữ liệu?")) { 
-            document.getElementById('input').value = "";
-            document.getElementById('fileStatus').innerText = "Chưa có file nào được nạp";
-            finalL = []; finalN = []; finalTG = [];
-            updateUI();
+        if(confirm("Xóa sạch dữ liệu trong máy?")) {
+            localStorage.removeItem('storedNumbers');
+            combinedData = "";
+            outputSmall.value = "";
+            outputLarge.value = "";
+            inputNum.value = "";
+            alert("Đã xóa sạch.");
         }
     }
 </script>
+
 </body>
 </html>
