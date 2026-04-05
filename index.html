@@ -133,16 +133,42 @@
         el.style.height = el.scrollHeight + 'px';
     }
 
-    document.getElementById('f').onchange = async (e) => {
+document.getElementById('f').onchange = async (e) => {
         let newContent = "";
+        
+        // 1. Đọc nội dung từ các file mới được chọn
         for (let file of e.target.files) {
             newContent += (await file.text()).replace(/\s+/g, '').replace(/[^0-9]/g, '');
         }
-        if (!raw.includes(newContent)) raw += newContent;
-        localStorage.setItem('big_data', raw);
-        msg.innerText = "TỔNG DỮ LIỆU: " + raw.length;
+
+        if (newContent) {
+            // 2. XÓA DỮ LIỆU CŨ TRONG LOCAL STORAGE
+            localStorage.removeItem('big_data'); 
+
+            // 3. Gán dữ liệu mới vào biến tạm
+            raw = newContent; 
+
+            // 4. LƯU DỮ LIỆU MỚI VÀO LOCAL STORAGE (Ghi đè hoàn toàn)
+            localStorage.setItem('big_data', raw);
+
+            // 5. Cập nhật giao diện
+            msg.innerText = "ĐÃ XÓA CŨ - NẠP MỚI: " + raw.length + " SỐ";
+            
+            // Reset các ô hiển thị kết quả của file cũ
+            inputN.value = "";
+            outS.value = "";
+            outL.value = "";
+            valS.innerText = "0";
+            valL.innerText = "0";
+            alertBox.style.display = "none";
+        }
+        
+        // Reset input file để có thể chọn lại chính file đó nếu muốn
+        e.target.value = ""; 
         inputM.focus();
     };
+
+    
 
     inputM.addEventListener('input', (e) => {
         const val = e.target.value.trim();
