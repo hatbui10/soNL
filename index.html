@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATRIX - PRO V2</title>
+    <title>MATRIX - PRO V2 (1-4)</title>
     <style>
         :root { 
             --neon: #00f3ff; --pink: #ff00ff; --bg: #030305;
@@ -20,11 +20,12 @@
 
         .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; align-items: center; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; }
 
-        /* Style cho hàng nút chọn chế độ quét */
-        .mode-row { display: flex; gap: 10px; margin-bottom: 5px; }
+        /* Style cho hàng nút chọn chế độ quét - Cập nhật để chứa 4 nút */
+        .mode-row { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; justify-content: center; }
         .btn-mode {
             background: #000; border: 1px solid #444; color: #888;
-            padding: 5px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;
+            font-size: 12px;
         }
         .btn-mode.active {
             border-color: var(--yellow); color: var(--yellow); box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
@@ -55,8 +56,7 @@
         .input-row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
         input { background: #000; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; outline: none; }
         
-        /* Độ rộng ô N tự co giãn theo chế độ */
-        #numN { width: 90px; text-align: center; font-size: 1.4em; border-color: var(--neon); color: var(--neon); letter-spacing: 3px; font-weight: 900; }
+        #numN { width: 110px; text-align: center; font-size: 1.4em; border-color: var(--neon); color: var(--neon); letter-spacing: 3px; font-weight: 900; }
         #numM { width: 55px; text-align: center; font-size: 1.4em; border-color: var(--pink); color: var(--pink); font-weight: 900; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: start; }
@@ -75,10 +75,12 @@
     
     <div class="controls">
         <div class="input-row">
-            <input type="file" id="f" multiple style="width: 150px; font-size: 10px;">
+            <input type="file" id="f" multiple style="width: 120px; font-size: 10px;">
             <div class="mode-row">
-                <button class="btn-mode active" id="btn3" onclick="setMode(3)">QUÉT 3</button>
-                <button class="btn-mode" id="btn4" onclick="setMode(4)">QUÉT 4</button>
+                <button class="btn-mode" id="btn1" onclick="setMode(1)">Q1</button>
+                <button class="btn-mode" id="btn2" onclick="setMode(2)">Q2</button>
+                <button class="btn-mode active" id="btn3" onclick="setMode(3)">Q3</button>
+                <button class="btn-mode" id="btn4" onclick="setMode(4)">Q4</button>
             </div>
         </div>
 
@@ -115,7 +117,7 @@
 
 <script>
     let raw = localStorage.getItem('big_data') || "";
-    let scanMode = 3; // Mặc định quét 3 số
+    let scanMode = 3; 
 
     const inputN = document.getElementById('numN'), inputM = document.getElementById('numM');
     const outS = document.getElementById('os'), outL = document.getElementById('ol');
@@ -128,15 +130,21 @@
         if (raw) msg.innerText = "DỮ LIỆU SẴN SÀNG: " + raw.length;
     };
 
-    // Hàm chuyển đổi chế độ quét 3 hoặc 4
+    // Hàm chuyển đổi chế độ quét từ 1 đến 4
     function setMode(m) {
         scanMode = m;
-        document.getElementById('btn3').classList.toggle('active', m === 3);
-        document.getElementById('btn4').classList.toggle('active', m === 4);
-        inputN.style.width = (m === 3) ? "90px" : "110px";
-        inputN.placeholder = (m === 3) ? "---" : "----";
+        // Xóa active tất cả các nút
+        [1,2,3,4].forEach(num => {
+            document.getElementById('btn' + num).classList.toggle('active', num === m);
+        });
+
+        // Điều chỉnh độ rộng và placeholder linh hoạt
+        const widths = { 1: "60px", 2: "80px", 3: "100px", 4: "120px" };
+        const placeholders = { 1: "-", 2: "--", 3: "---", 4: "----" };
         
-        // Reset ô N khi đổi chế độ để tránh nhầm lẫn
+        inputN.style.width = widths[m];
+        inputN.placeholder = placeholders[m];
+        
         inputN.value = "";
         inputM.focus();
     }
@@ -171,7 +179,7 @@
         if (!cleanVal) { e.target.value = ""; return; }
         
         let currentN = inputN.value.replace(/[^0-9]/g, '');
-        // Cắt theo scanMode (3 hoặc 4)
+        // Cắt theo scanMode (1, 2, 3 hoặc 4)
         currentN = (currentN + cleanVal.slice(-1)).slice(-scanMode);
         
         inputN.value = currentN;
