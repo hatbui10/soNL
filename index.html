@@ -3,243 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MATRIX - PRO V2 (1-4)</title>
+    <title>VN168 PRO - Cập Nhật File Trực Tiếp</title>
     <style>
-        :root { 
-            --neon: #00f3ff; --pink: #ff00ff; --bg: #030305;
-            --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
-            --yellow: #ffff00;
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff0055;
+            --bg-dark: #050505;
         }
 
-        body { 
-            background: var(--bg); color: #fff; font-family: system-ui, sans-serif; 
-            margin: 20px 10px; min-height: 100vh;
+        body {
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 30px 3px 0 3px; /* Quy tắc 3 cạnh */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .box { max-width: 900px; margin: 0 auto; background: var(--glass); backdrop-filter: blur(20px); padding: 20px; border-radius: 20px; border: 1px solid var(--border); }
-
-        .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; align-items: center; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; }
-
-        /* Style cho hàng nút chọn chế độ quét - Cập nhật để chứa 4 nút */
-        .mode-row { display: flex; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; justify-content: center; }
-        .btn-mode {
-            background: #000; border: 1px solid #444; color: #888;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;
-            font-size: 12px;
-        }
-        .btn-mode.active {
-            border-color: var(--yellow); color: var(--yellow); box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+        /* Khu vực nút Upload */
+        .upload-section {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 20px;
         }
 
-        .count-row { display: flex; gap: 10px; width: 100%; justify-content: center; margin: 5px 0; }
-        .count-mini-card { flex: 1; max-width: 150px; background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: 10px; padding: 5px; text-align: center; }
-        .count-label { font-size: 9px; color: #aaa; text-transform: uppercase; margin-bottom: 2px; }
-        .count-value { font-size: 48px; font-weight: 900; font-family: 'Courier New', monospace; line-height: 1; text-shadow: 0 0 15px currentColor; }
-
-        .c-small { border-color: var(--neon); color: var(--neon); }
-        .c-large { border-color: var(--pink); color: var(--pink); }
-
-        #alertBox {
-            width: 80%; max-width: 350px; padding: 20px; margin-top: 10px;
-            background: rgba(255, 255, 0, 0.1); border: 2px solid var(--yellow);
-            border-radius: 15px; color: var(--yellow); text-align: center;
-            font-weight: 900; font-size: 24px; display: none; 
-            animation: blink 1s infinite; letter-spacing: 2px; white-space: pre;
+        .btn-upload {
+            flex: 1;
+            padding: 10px 5px;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid #333;
+            background: #111;
+            white-space: nowrap;
         }
 
-        @keyframes blink {
-            0% { opacity: 1; box-shadow: 0 0 15px var(--yellow); }
-            50% { opacity: 0.5; box-shadow: none; }
-            100% { opacity: 1; box-shadow: 0 0 15px var(--yellow); }
+        .btn-p1 { color: #ffff00; border-color: #ffff00; }
+        .btn-p2 { color: #0088ff; border-color: #0088ff; }
+        .btn-p3 { color: #ff00ff; border-color: #ff00ff; }
+
+        /* Khu vực nhập liệu */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .input-row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
-        input { background: #000; border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; outline: none; }
-        
-        #numN { width: 110px; text-align: center; font-size: 1.4em; border-color: var(--neon); color: var(--neon); letter-spacing: 3px; font-weight: 900; }
-        #numM { width: 55px; text-align: center; font-size: 1.4em; border-color: var(--pink); color: var(--pink); font-weight: 900; }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: start; }
-        textarea { 
-            width: 100%; min-height: 60px; background: rgba(0,0,0,0.4); 
-            color: #ffffff; border: 1px solid var(--border); border-radius: 10px; 
-            padding: 12px; font-family: monospace; font-size: 22px; 
-            font-weight: bold; resize: none; overflow: hidden; box-sizing: border-box;
+        .num-box {
+            width: 65px;
+            height: 85px;
+            background: #111;
+            border: 2px solid #333;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
         }
+
+        #n4 {
+            background: #1a1a1a;
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            outline: none;
+            text-align: center;
+            caret-color: transparent;
+        }
+
+        .result-box {
+            width: 100%;
+            max-width: 450px;
+            padding: 30px 15px;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        #finalResult {
+            font-size: 24px;
+            font-weight: 900;
+            min-height: 36px;
+        }
+
+        .p1-style { color: #ffff00; text-shadow: 0 0 15px #ffff00; }
+        .p2-style { color: #0088ff; text-shadow: 0 0 15px #0088ff; }
+        .p3-style { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <div id="msg" style="text-align:center; font-size:11px; color:var(--neon); margin-bottom:10px; font-family:monospace;">HỆ THỐNG SẴN SÀNG</div>
-    
-    <div class="controls">
-        <div class="input-row">
-            <input type="file" id="f" multiple style="width: 120px; font-size: 10px;">
-            <div class="mode-row">
-                <button class="btn-mode" id="btn1" onclick="setMode(1)">Q1</button>
-                <button class="btn-mode" id="btn2" onclick="setMode(2)">Q2</button>
-                <button class="btn-mode active" id="btn3" onclick="setMode(3)">Q3</button>
-                <button class="btn-mode" id="btn4" onclick="setMode(4)">Q4</button>
-            </div>
-        </div>
-
-        <div class="input-row">
-            <input type="text" id="numN" placeholder="---" readonly tabindex="-1">
-            <input type="tel" id="numM" placeholder="M">
-        </div>
-
-        <div class="count-row">
-            <div class="count-mini-card c-small">
-                <div class="count-label">MAX SL < 5</div>
-                <div id="valS" class="count-value">0</div>
-            </div>
-            <div class="count-mini-card c-large">
-                <div class="count-label">MAX SL ≥ 5</div>
-                <div id="valL" class="count-value">0</div>
-            </div>
-        </div>
-
-        <div id="alertBox"></div>
+    <div class="upload-section">
+        <label class="btn-upload btn-p1">
+            TẢI LỚN (P1) <input type="file" hidden onchange="handleFile(this, 'p1')">
+        </label>
+        <label class="btn-upload btn-p2">
+            TẢI NHỎ (P2) <input type="file" hidden onchange="handleFile(this, 'p2')">
+        </label>
+        <label class="btn-upload btn-p3">
+            TẢI TR.GIAN (P3) <input type="file" hidden onchange="handleFile(this, 'p3')">
+        </label>
     </div>
 
-    <div class="grid">
-        <div class="col">
-            <div style="font-size: 11px; color: #888; text-align: center; margin-bottom: 5px; font-weight: bold;">DÃY NHỎ (< 5)</div>
-            <textarea id="os" readonly></textarea>
-        </div>
-        <div class="col">
-            <div style="font-size: 11px; color: #888; text-align: center; margin-bottom: 5px; font-weight: bold;">DÃY LỚN (≥ 5)</div>
-            <textarea id="ol" readonly></textarea>
-        </div>
+    <div class="input-group">
+        <div class="num-box" id="n1">-</div>
+        <div class="num-box" id="n2">-</div>
+        <div class="num-box" id="n3">-</div>
+        <input type="number" pattern="\d*" inputmode="numeric" class="num-box" id="n4" placeholder="?">
     </div>
-</div>
+
+    <div class="result-box">
+        <div id="finalResult">CHỜ DỮ LIỆU...</div>
+    </div>
 
 <script>
-    let raw = localStorage.getItem('big_data') || "";
-    let scanMode = 3; 
+    // Bộ nhớ dữ liệu
+    let DATA = {
+        p1: new Set(),
+        p2: new Set(),
+        p3: new Set()
+    };
 
-    const inputN = document.getElementById('numN'), inputM = document.getElementById('numM');
-    const outS = document.getElementById('os'), outL = document.getElementById('ol');
-    const valS = document.getElementById('valS'), valL = document.getElementById('valL');
-    const alertBox = document.getElementById('alertBox');
-    const msg = document.getElementById('msg');
+    const inputN4 = document.getElementById('n4');
+    const boxes = [document.getElementById('n1'), document.getElementById('n2'), document.getElementById('n3')];
+    const displayResult = document.getElementById('finalResult');
 
     window.onload = () => {
-        inputM.focus();
-        if (raw) msg.innerText = "DỮ LIỆU SẴN SÀNG: " + raw.length;
+        inputN4.focus();
+        loadFromStorage();
     };
 
-    // Hàm chuyển đổi chế độ quét từ 1 đến 4
-    function setMode(m) {
-        scanMode = m;
-        // Xóa active tất cả các nút
-        [1,2,3,4].forEach(num => {
-            document.getElementById('btn' + num).classList.toggle('active', num === m);
-        });
+    document.addEventListener('click', () => inputN4.focus());
 
-        // Điều chỉnh độ rộng và placeholder linh hoạt
-        const widths = { 1: "60px", 2: "80px", 3: "100px", 4: "120px" };
-        const placeholders = { 1: "-", 2: "--", 3: "---", 4: "----" };
-        
-        inputN.style.width = widths[m];
-        inputN.placeholder = placeholders[m];
-        
-        inputN.value = "";
-        inputM.focus();
+    // Xử lý khi chọn file
+    function handleFile(input, type) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const content = e.target.result;
+            const numbers = content.match(/\d{3}/g) || [];
+            DATA[type] = new Set(numbers);
+            
+            // Lưu vào LocalStorage
+            localStorage.setItem(`vn168_file_${type}`, JSON.stringify(numbers));
+            alert(`Đã tải ${numbers.length} số vào danh sách ${type.toUpperCase()}`);
+            checkResult();
+        };
+        reader.readAsText(file);
     }
 
-    function autoResize(el) {
-        el.style.height = 'auto'; 
-        el.style.height = el.scrollHeight + 'px';
-    }
+    // Input dịch trái
+    inputN4.addEventListener('input', function() {
+        let val = this.value.slice(-1);
+        if (val === "" || isNaN(val)) return;
 
-    document.getElementById('f').onchange = async (e) => {
-        let newContent = "";
-        for (let file of e.target.files) {
-            newContent += (await file.text()).replace(/\s+/g, '').replace(/[^0-9]/g, '');
-        }
-        if (newContent) {
-            localStorage.removeItem('big_data'); 
-            raw = newContent; 
-            localStorage.setItem('big_data', raw);
-            msg.innerText = "NẠP MỚI: " + raw.length + " SỐ";
-            inputN.value = "";
-            outS.value = ""; outL.value = "";
-            valS.innerText = "0"; valL.innerText = "0";
-            alertBox.style.display = "none";
-        }
-        e.target.value = ""; 
-        inputM.focus();
-    };
+        boxes[0].innerText = boxes[1].innerText;
+        boxes[1].innerText = boxes[2].innerText;
+        boxes[2].innerText = val;
 
-    inputM.addEventListener('input', (e) => {
-        const val = e.target.value.trim();
-        const cleanVal = val.replace(/[^0-9]/g, '');
-        if (!cleanVal) { e.target.value = ""; return; }
-        
-        let currentN = inputN.value.replace(/[^0-9]/g, '');
-        // Cắt theo scanMode (1, 2, 3 hoặc 4)
-        currentN = (currentN + cleanVal.slice(-1)).slice(-scanMode);
-        
-        inputN.value = currentN;
-        e.target.value = "";
-        autoCalc(currentN);
+        this.value = "";
+        saveCurrentBoxes();
+        checkResult();
     });
 
-    function autoCalc(target) {
-        if (!raw || target.length < scanMode) return;
-        let resS = new Set(), resL = new Set(), i = raw.indexOf(target);
+    function checkResult() {
+        let s1 = boxes[0].innerText;
+        let s2 = boxes[1].innerText;
+        let s3 = boxes[2].innerText;
 
-        while (i !== -1) {
-            let start = i + target.length, s = "", l = "";
-            for (let k = start; k < raw.length; k++) {
-                let n = parseInt(raw[k]);
-                if (n < 5) s += n; else break;
-            }
-            if (s) resS.add(target + "-" + s);
-            for (let k = start; k < raw.length; k++) {
-                let n = parseInt(raw[k]);
-                if (n >= 5) l += n; else break;
-            }
-            if (l) resL.add(target + "-" + l);
-            i = raw.indexOf(target, i + 1);
-        }
+        if (s1 === "-" || s2 === "-" || s3 === "-") return;
 
-        const sortFn = (a, b) => b.length - a.length;
-        const sortedS = Array.from(resS).sort(sortFn);
-        const sortedL = Array.from(resL).sort(sortFn);
+        let numStr = s1 + s2 + s3;
 
-        outS.value = sortedS.join('\n');
-        outL.value = sortedL.join('\n');
-
-        const lenS = sortedS.length > 0 ? sortedS[0].split('-')[1].length : 0;
-        const lenL = sortedL.length > 0 ? sortedL[0].split('-')[1].length : 0;
-
-        valS.innerText = lenS;
-        valL.innerText = lenL;
-
-        if (lenS === 0 && lenL === 0) {
-            alertBox.style.display = "none";
+        if (DATA.p1.has(numStr)) {
+            displayResult.innerText = "LỚN LỚN LỚN LỚN LỚN LỚN";
+            displayResult.className = "p1-style";
+        } else if (DATA.p2.has(numStr)) {
+            displayResult.innerText = "NHỎ NHỎ NHỎ NHỎ NHỎ NHỎ";
+            displayResult.className = "p2-style";
+        } else if (DATA.p3.has(numStr)) {
+            displayResult.innerText = "TRUNG GIAN";
+            displayResult.className = "p3-style";
         } else {
-            alertBox.style.display = "block";
-            const s5 = "     "; 
-            if (lenS > lenL) {
-                alertBox.innerText = `Dùng${s5}NHỎ   ${lenS}  lần`;
-            } else if (lenL > lenS) {
-                alertBox.innerText = `Dùng${s5}LỚN   ${lenL}  lần`;
-            } else {
-                alertBox.innerText = `cân bằng${s5}${lenS}    lần`;
-            }
+            displayResult.innerText = "KHÔNG CÓ TRONG FILE";
+            displayResult.className = "";
         }
-        autoResize(outS); autoResize(outL);
     }
 
-    document.addEventListener('click', (e) => {
-        if(!['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) {
-            inputM.focus();
+    function saveCurrentBoxes() {
+        const data = boxes.map(b => b.innerText);
+        localStorage.setItem('vn168_boxes', JSON.stringify(data));
+    }
+
+    function loadFromStorage() {
+        // Load số đang nhập dở
+        const savedBoxes = localStorage.getItem('vn168_boxes');
+        if (savedBoxes) {
+            const data = JSON.parse(savedBoxes);
+            data.forEach((val, i) => boxes[i].innerText = val);
         }
-    });
+
+        // Load dữ liệu từ các file đã tải trước đó
+        ['p1', 'p2', 'p3'].forEach(type => {
+            const savedFile = localStorage.getItem(`vn168_file_${type}`);
+            if (savedFile) {
+                DATA[type] = new Set(JSON.parse(savedFile));
+            }
+        });
+        
+        checkResult();
+    }
 </script>
+
 </body>
 </html>
